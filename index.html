@@ -138,14 +138,13 @@ footer .tot{font-size:28px;font-weight:600;letter-spacing:-.5px}
     '생활용품':['휴지','키친타월','주방세제','쓰레기봉투']
   };
   var PRICES = {'메론':9990,'샤인머스캣':8990,'계란':5990,'호두':8990,'연어':22900,'갈매기살':8887,'떡갈비':10480,'맥스봉':7480,'우유':5880,'카레':4700,'눈을감자':1190,'무뚝뚝':1690,'붕어빵':4320,'물':3600,'소주':2380};
-  var SEED = [['메론',2],['샤인머스캣',1],['계란',1],['호두',1],['연어',1],['갈매기살',1],['떡갈비',1],['맥스봉',1],['우유',1],['카레',1],['눈을감자',1],['무뚝뚝',1],['붕어빵',1],['물',1],['소주',2]];
   var LS = 'jangbogi-v1';
 
   function fresh(){
     return {
       catalog: JSON.parse(JSON.stringify(CATALOG)),
       prices: Object.assign({}, PRICES),
-      cart: SEED.map(function(s){ return {name:s[0], qty:s[1], price:PRICES[s[0]]||0, checked:false}; }),
+      cart: [],
       updatedAt: 0
     };
   }
