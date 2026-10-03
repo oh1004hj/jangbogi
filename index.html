@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F6F4A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="장보기">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>장보기 계산기</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F5F1;--surface:#FFFFFF;--ink:#1B1F1D;--muted:#5A615C;--line:#DCE0D9;--line2:#ECEEEA;
+  --accent:#1F6F4A;--onAccent:#FFFFFF;--accentSoft:#E3EFE7;--accentInk:#14502F;
+  --bar:#1B1F1D;--barInk:#FFFFFF;--barMuted:#C9CEC9;--seg:#ECEEEA;--box:#9AA29C;--warn:#A4410E;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  background:var(--bar);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121513;--surface:#1A1E1C;--ink:#ECEFEA;--muted:#A3ABA5;--line:#323833;--line2:#262B28;
+    --accent:#237A50;--onAccent:#FFFFFF;--accentSoft:#1D3227;--accentInk:#8FD3AE;
+    --bar:#000000;--barInk:#FFFFFF;--barMuted:#A3ABA5;--seg:#262B28;--box:#6E766F;--warn:#F0A37A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121513;--surface:#1A1E1C;--ink:#ECEFEA;--muted:#A3ABA5;--line:#323833;--line2:#262B28;
+  --accent:#237A50;--onAccent:#FFFFFF;--accentSoft:#1D3227;--accentInk:#8FD3AE;
+  --bar:#000000;--barInk:#FFFFFF;--barMuted:#A3ABA5;--seg:#262B28;--box:#6E766F;--warn:#F0A37A;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{height:100%;margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+  -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+button{font-family:inherit;cursor:pointer;color:inherit}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+#app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+header{background:var(--surface);padding:18px 16px 0;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;justify-content:space-between;align-items:flex-end}
+.date{font-size:13px;color:var(--muted)}
+h1{margin:2px 0 0;font-size:24px;font-weight:700;letter-spacing:-.5px}
+.prog{font-size:13px;color:var(--muted)}
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--seg);padding:4px;border-radius:12px}
+.seg button{height:40px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:15px;font-weight:500}
+.seg button.on{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.cats{display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:0 16px 12px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cats button{flex-shrink:0;height:36px;padding:0 14px;border-radius:18px;font-size:14px;font-weight:500;white-space:nowrap;background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.cats button.on{background:var(--ink);color:var(--surface);border-color:var(--ink);font-weight:700}
+.listhead{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;min-height:46px}
+.listhead span{font-size:14px;color:var(--muted)}
+.ghost{height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:transparent;font-size:14px;font-weight:500}
+.ghost.armed{border-color:var(--warn);color:var(--warn);font-weight:700}
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px 16px 8px}
+.cw{position:relative}
+.card{position:relative;width:100%;height:84px;padding:22px 8px 8px;border-radius:14px;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--surface);border:1px solid var(--line);font-size:15px;font-weight:700;line-height:1.3;word-break:keep-all;transition:transform .08s}
+.card:active{transform:scale(.97)}
+.card.on{background:var(--accentSoft);border:2px solid var(--accent);color:var(--ink)}
+.badge{position:absolute;top:8px;right:8px;min-width:24px;height:24px;padding:0 7px;border-radius:12px;background:var(--accent);color:var(--onAccent);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.reset{position:absolute;top:0;left:0;width:40px;height:40px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center}
+.reset span{width:24px;height:24px;border-radius:12px;background:var(--surface);border:1px solid var(--box);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.addrow{display:flex;gap:8px;padding:8px 16px 20px}
+.addrow input{flex:1;min-width:0;height:46px;border:1px dashed var(--box);border-radius:12px;background:transparent;padding:0 14px;font:inherit;font-size:16px;color:var(--ink)}
+.primary{height:46px;padding:0 18px;border:0;border-radius:12px;background:var(--accent);color:var(--onAccent);font-size:15px;font-weight:700}
+.rows{background:var(--surface);min-height:100%}
+.row{display:flex;gap:4px;padding:10px 12px 12px 4px;border-bottom:1px solid var(--line2)}
+.row.done{opacity:.55}
+.row.done .nm{text-decoration:line-through}
+.chk{width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chk span{width:22px;height:22px;border-radius:6px;border:2px solid var(--box);background:var(--surface);display:flex;align-items:center;justify-content:center}
+.row.done .chk span{background:var(--accent);border-color:var(--accent)}
+.rb{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;padding-top:10px}
+.l1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.nm{font-size:16px;font-weight:700}
+.ct{font-size:12px;color:var(--muted);margin-left:6px}
+.lt{font-size:16px;font-weight:600;white-space:nowrap}
+.l2{display:flex;align-items:center;gap:8px}
+.pbox{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;padding-left:10px;height:40px;width:124px}
+.pbox span{font-size:13px;color:var(--muted)}
+.pbox input{width:100%;min-width:0;border:0;background:transparent;font-size:16px;text-align:right;padding-right:10px;color:var(--ink)}
+.pbox input:focus{outline:none}
+.pbox:focus-within{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.x{font-size:13px;color:var(--muted)}
+.step{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;height:40px;overflow:hidden}
+.step button{width:40px;height:40px;border:0;background:var(--bg);font-size:18px}
+.step b{min-width:32px;text-align:center;font-size:15px;font-weight:600}
+.empty{padding:56px 24px;text-align:center;color:var(--muted);font-size:15px;line-height:1.6}
+footer{background:var(--bar);color:var(--barInk);padding:14px 20px 16px;display:flex;justify-content:space-between;align-items:center}
+footer small{display:block;font-size:13px;color:var(--barMuted)}
+footer .lbl{font-size:15px;font-weight:500}
+footer .tot{font-size:28px;font-weight:600;letter-spacing:-.5px}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="top">
+      <div>
+        <div class="date" id="date"></div>
+        <h1>오늘 장보기</h1>
+      </div>
+      <div class="prog" id="prog"></div>
+    </div>
+    <div class="seg">
+      <button data-act="tab" data-v="pick" id="tPick">품목 고르기</button>
+      <button data-act="tab" data-v="list" id="tList">담은 목록</button>
+    </div>
+    <div id="sub"></div>
+  </header>
+  <main id="main"></main>
+  <footer>
+    <div><small id="cnt"></small><span class="lbl">합계</span></div>
+    <div class="tot mono" id="tot"></div>
+  </footer>
+</div>
+<script>
+(function(){
+  var CATALOG = {
+    '과일·채소':['메론','샤인머스캣','바나나','사과','귤','딸기','토마토','양파','대파','감자','당근','애호박','오이','상추','버섯','마늘'],
+    '정육·수산':['갈매기살','삼겹살','목살','소고기 국거리','닭가슴살','연어','고등어','새우','오징어'],
+    '유제품·계란':['우유','계란','요거트','치즈','버터','두부'],
+    '가공·냉동':['떡갈비','카레','라면','햄','만두','붕어빵','어묵','김','참치캔','즉석밥'],
+    '과자·간식':['맥스봉','눈을감자','무뚝뚝','호두','초콜릿','아이스크림'],
+    '음료·주류':['물','소주','맥주','탄산수','커피','주스'],
+    '생활용품':['휴지','키친타월','주방세제','쓰레기봉투']
+  };
+  var PRICES = {'메론':9990,'샤인머스캣':8990,'계란':5990,'호두':8990,'연어':22900,'갈매기살':8887,'떡갈비':10480,'맥스봉':7480,'우유':5880,'카레':4700,'눈을감자':1190,'무뚝뚝':1690,'붕어빵':4320,'물':3600,'소주':2380};
+  var SEED = [['메론',2],['샤인머스캣',1],['계란',1],['호두',1],['연어',1],['갈매기살',1],['떡갈비',1],['맥스봉',1],['우유',1],['카레',1],['눈을감자',1],['무뚝뚝',1],['붕어빵',1],['물',1],['소주',2]];
+  var LS = 'jangbogi-v1';
+
+  function fresh(){
+    return {
+      catalog: JSON.parse(JSON.stringify(CATALOG)),
+      prices: Object.assign({}, PRICES),
+      cart: SEED.map(function(s){ return {name:s[0], qty:s[1], price:PRICES[s[0]]||0, checked:false}; }),
+      updatedAt: 0
+    };
+  }
+  function valid(s){ return s && typeof s==='object' && s.catalog && s.prices && Array.isArray(s.cart); }
+  function loadLocal(){ try{ var s=JSON.parse(localStorage.getItem(LS)); return valid(s)?s:null; }catch(e){ return null; } }
+  function saveLocal(){ try{ localStorage.setItem(LS, JSON.stringify(S)); }catch(e){} }
+
+  var S = loadLocal() || fresh();
+  var ui = {tab:'pick', cat:'전체', draft:'', armed:false};
+  function persist(){
+    S.updatedAt = Date.now();
+    saveLocal();
+  }
+
+  var $ = function(id){ return document.getElementById(id); };
+  function fmt(n){ return Number(n||0).toLocaleString('ko-KR'); }
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function catOf(name){
+    for(var c in S.catalog){ if(S.catalog[c].indexOf(name)>-1) return c; }
+    return '기타';
+  }
+  function findIdx(name){ for(var i=0;i<S.cart.length;i++){ if(S.cart[i].name===name) return i; } return -1; }
+
+  var resetIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><polyline points="3 3 3 9 9 9"></polyline></svg>';
+  var checkIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+  function totals(){
+    var t=0,q=0,c=0;
+    S.cart.forEach(function(it){ t+=it.price*it.qty; q+=it.qty; if(it.checked) c++; });
+    $('tot').textContent = fmt(t)+'원';
+    $('cnt').textContent = S.cart.length+'품목 · '+q+'개';
+    $('prog').textContent = '담음 '+c+' / '+S.cart.length;
+    $('tList').textContent = '담은 목록 '+S.cart.length;
+  }
+
+  var currentCards = [];
+  function render(){
+    var d = new Date();
+    $('date').textContent = (d.getMonth()+1)+'월 '+d.getDate()+'일 '+['일','월','화','수','목','금','토'][d.getDay()]+'요일';
+    $('tPick').className = ui.tab==='pick'?'on':'';
+    $('tList').className = ui.tab==='list'?'on':'';
+    var sub = $('sub'), main = $('main');
+    if(ui.tab==='pick'){
+      var cats = ['전체'].concat(Object.keys(S.catalog));
+      if(cats.indexOf(ui.cat)<0) ui.cat='전체';
+      sub.innerHTML = '<div class="cats">'+cats.map(function(c){
+        return '<button data-act="cat" data-v="'+esc(c)+'" class="'+(c===ui.cat?'on':'')+'">'+esc(c)+'</button>';
+      }).join('')+'</div>';
+      currentCards = ui.cat==='전체'
+        ? Object.keys(S.catalog).reduce(function(a,c){ return a.concat(S.catalog[c]); },[])
+        : S.catalog[ui.cat].slice();
+      var html = '<div class="grid">'+currentCards.map(function(n,i){
+        var k = findIdx(n), q = k>-1?S.cart[k].qty:0;
+        return '<div class="cw"><button class="card'+(q?' on':'')+'" data-act="add" data-i="'+i+'" aria-label="'+esc(n)+' 담기">'+esc(n)+(q?'<span class="badge mono">'+q+'</span>':'')+'</button>'+
+          (q?'<button class="reset" data-act="reset" data-i="'+i+'" aria-label="'+esc(n)+' 리셋"><span>'+resetIcon+'</span></button>':'')+'</div>';
+      }).join('')+'</div>';
+      html += '<div class="addrow"><input id="draft" aria-label="목록에 없는 품목" placeholder="목록에 없으면 직접 입력" enterkeyhint="done"><button class="primary" data-act="addDraft">추가</button></div>';
+      var keep = main.scrollTop;
+      main.innerHTML = html;
+      main.scrollTop = keep;
+      $('draft').value = ui.draft;
+    } else {
+      sub.innerHTML = '<div class="listhead"><span>체크하면 카트에 담은 표시</span><button class="ghost'+(ui.armed?' armed':'')+'" data-act="clearAll">'+(ui.armed?'한 번 더 누르면 비워요':'전체 리셋')+'</button></div>';
+      if(!S.cart.length){
+        main.innerHTML = '<div class="rows"><div class="empty">아직 담은 품목이 없어요.<br>품목 고르기에서 카드를 눌러 담아보세요.</div></div>';
+      } else {
+        main.innerHTML = '<div class="rows">'+S.cart.map(function(it,i){
+          return '<div class="row'+(it.checked?' done':'')+'" id="r'+i+'">'+
+            '<button class="chk" data-act="toggle" data-i="'+i+'" aria-label="'+esc(it.name)+' 담음 표시" aria-pressed="'+it.checked+'"><span>'+(it.checked?checkIcon:'')+'</span></button>'+
+            '<div class="rb"><div class="l1"><div><span class="nm">'+esc(it.name)+'</span><span class="ct">'+esc(catOf(it.name))+'</span></div>'+
+            '<span class="lt mono" id="lt'+i+'">'+(it.price?fmt(it.price*it.qty):'—')+'</span></div>'+
+            '<div class="l2"><label class="pbox"><span>₩</span><input class="mono" data-i="'+i+'" inputmode="numeric" placeholder="가격" aria-label="'+esc(it.name)+' 단가" value="'+(it.price?fmt(it.price):'')+'"></label>'+
+            '<span class="x">×</span><div class="step"><button data-act="dec" data-i="'+i+'" aria-label="수량 줄이기">−</button><b class="mono">'+it.qty+'</b><button data-act="inc" data-i="'+i+'" aria-label="수량 늘리기">+</button></div></div></div></div>';
+        }).join('')+'</div>';
+      }
+    }
+    totals();
+  }
+
+  function addItem(name){
+    var k = findIdx(name);
+    if(k>-1) S.cart[k].qty++;
+    else S.cart.push({name:name, qty:1, price:S.prices[name]||0, checked:false});
+  }
+
+  var armTimer = null;
+  document.getElementById('app').addEventListener('click', function(e){
+    var b = e.target.closest('[data-act]'); if(!b) return;
+    var act = b.getAttribute('data-act'), i = +b.getAttribute('data-i');
+    if(act!=='clearAll' && ui.armed){ ui.armed=false; }
+    if(act==='tab'){ ui.tab=b.getAttribute('data-v'); ui.armed=false; $('main').scrollTop=0; render(); return; }
+    if(act==='cat'){ ui.cat=b.getAttribute('data-v'); $('main').scrollTop=0; render(); return; }
+    if(act==='add'){ addItem(currentCards[i]); persist(); render(); return; }
+    if(act==='reset'){ var k=findIdx(currentCards[i]); if(k>-1) S.cart.splice(k,1); persist(); render(); return; }
+    if(act==='addDraft'){
+      var n = ($('draft').value||'').trim(); if(!n) return;
+      if(catOf(n)==='기타'){ if(!S.catalog['기타']) S.catalog['기타']=[]; if(S.catalog['기타'].indexOf(n)<0) S.catalog['기타'].push(n); }
+      addItem(n); ui.draft=''; persist(); render(); return;
+    }
+    if(act==='toggle'){ S.cart[i].checked=!S.cart[i].checked; persist(); render(); return; }
+    if(act==='inc'){ S.cart[i].qty++; persist(); render(); return; }
+    if(act==='dec'){ if(S.cart[i].qty<=1) S.cart.splice(i,1); else S.cart[i].qty--; persist(); render(); return; }
+    if(act==='clearAll'){
+      clearTimeout(armTimer);
+      if(!ui.armed){ ui.armed=true; render(); armTimer=setTimeout(function(){ ui.armed=false; if(ui.tab==='list') render(); },3000); return; }
+      ui.armed=false; S.cart=[]; persist(); render(); return;
+    }
+  });
+
+  document.getElementById('app').addEventListener('input', function(e){
+    var t = e.target;
+    if(t.id==='draft'){ ui.draft=t.value; return; }
+    if(t.hasAttribute('data-i') && t.closest('.pbox')){
+      var i = +t.getAttribute('data-i'), it = S.cart[i]; if(!it) return;
+      var v = parseInt(String(t.value).replace(/[^0-9]/g,''),10) || 0;
+      it.price = v; if(v) S.prices[it.name] = v;
+      $('lt'+i).textContent = v?fmt(v*it.qty):'—';
+      totals(); persist();
+    }
+  });
+  document.getElementById('app').addEventListener('change', function(e){
+    var t = e.target;
+    if(t.hasAttribute('data-i') && t.closest('.pbox')){
+      var it = S.cart[+t.getAttribute('data-i')]; if(it) t.value = it.price?fmt(it.price):'';
+    }
+  });
+  document.getElementById('app').addEventListener('keydown', function(e){
+    if(e.key==='Enter' && e.target.id==='draft'){ e.preventDefault(); var btn=document.querySelector('[data-act="addDraft"]'); if(btn) btn.click(); }
+    if(e.key==='Enter' && e.target.closest && e.target.closest('.pbox')){ e.target.blur(); }
+  });
+
+  render();
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
+  }
+})();
+</script>
+</body>
+</html>
