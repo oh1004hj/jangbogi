@@ -1,6 +1,6 @@
 // 장보기 계산기 서비스 워커
 // 앱 파일을 수정해서 다시 올릴 때는 아래 버전 숫자를 하나 올려주세요 (v1 → v2).
-const CACHE = 'jangbogi-v7';
+const CACHE = 'jangbogi-v8';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {

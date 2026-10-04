@@ -1,6 +1,6 @@
 {
   "name": "장보기 계산기",
-  "short_name": "장보기",
+  "short_name": "오늘 장보기",
   "description": "카드로 담고 수량·가격을 입력하면 합계가 자동으로 계산되는 장보기 앱",
   "lang": "ko",
   "start_url": "./",
