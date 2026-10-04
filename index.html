@@ -3,105 +3,177 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1F6F4A">
+<meta name="theme-color" content="#F6F5F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111412" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="장보기">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
 <title>장보기 계산기</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{
-  --bg:#F4F5F1;--surface:#FFFFFF;--ink:#1B1F1D;--muted:#5A615C;--line:#DCE0D9;--line2:#ECEEEA;
-  --accent:#1F6F4A;--onAccent:#FFFFFF;--accentSoft:#E3EFE7;--accentInk:#14502F;
-  --bar:#1B1F1D;--barInk:#FFFFFF;--barMuted:#C9CEC9;--seg:#ECEEEA;--box:#9AA29C;--warn:#A4410E;
+  --bg:#F6F5F1;--surface:#FFFFFF;--tile:#F1F0EB;--ink:#17191A;--ink2:#3A3E3C;--muted:#7A7F7B;
+  --line:#E7E5DF;--line2:#EFEEE9;
+  --accent:#1C7A4E;--onAccent:#FFFFFF;--accentSoft:#E6F2EA;--accentInk:#13593A;
+  --bar:#17191A;--barInk:#FFFFFF;--barMuted:#A9AEAA;--danger:#C2410C;--dangerSoft:#FCEDE6;
+  --shadow:0 1px 2px rgba(23,25,26,.05),0 4px 14px rgba(23,25,26,.05);
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
-  background:var(--bar);
+  background:var(--bg);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#121513;--surface:#1A1E1C;--ink:#ECEFEA;--muted:#A3ABA5;--line:#323833;--line2:#262B28;
-    --accent:#237A50;--onAccent:#FFFFFF;--accentSoft:#1D3227;--accentInk:#8FD3AE;
-    --bar:#000000;--barInk:#FFFFFF;--barMuted:#A3ABA5;--seg:#262B28;--box:#6E766F;--warn:#F0A37A;
+    --bg:#111412;--surface:#1A1D1B;--tile:#232724;--ink:#EEF0EC;--ink2:#CDD1CC;--muted:#929893;
+    --line:#2C302D;--line2:#242825;
+    --accent:#2A8A5C;--onAccent:#FFFFFF;--accentSoft:#1B3326;--accentInk:#9BDDB8;
+    --bar:#000000;--barInk:#FFFFFF;--barMuted:#9AA09B;--danger:#F29A73;--dangerSoft:#3A2219;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
   }
 }
 :root[data-theme="dark"]{
-  --bg:#121513;--surface:#1A1E1C;--ink:#ECEFEA;--muted:#A3ABA5;--line:#323833;--line2:#262B28;
-  --accent:#237A50;--onAccent:#FFFFFF;--accentSoft:#1D3227;--accentInk:#8FD3AE;
-  --bar:#000000;--barInk:#FFFFFF;--barMuted:#A3ABA5;--seg:#262B28;--box:#6E766F;--warn:#F0A37A;
+  --bg:#111412;--surface:#1A1D1B;--tile:#232724;--ink:#EEF0EC;--ink2:#CDD1CC;--muted:#929893;
+  --line:#2C302D;--line2:#242825;
+  --accent:#2A8A5C;--onAccent:#FFFFFF;--accentSoft:#1B3326;--accentInk:#9BDDB8;
+  --bar:#000000;--barInk:#FFFFFF;--barMuted:#9AA09B;--danger:#F29A73;--dangerSoft:#3A2219;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
 }
 *,*::before,*::after{box-sizing:border-box}
 html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
 body{height:100%;margin:0;background:var(--bg);color:var(--ink);
-  font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
-  -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
-button{font-family:inherit;cursor:pointer;color:inherit}
+  font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+  -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;letter-spacing:-.01em}
+button{font-family:inherit;cursor:pointer;color:inherit;letter-spacing:inherit}
 button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
-#app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
-header{background:var(--surface);padding:18px 16px 0;display:flex;flex-direction:column;gap:14px}
-.top{display:flex;justify-content:space-between;align-items:flex-end}
-.date{font-size:13px;color:var(--muted)}
-h1{margin:2px 0 0;font-size:24px;font-weight:700;letter-spacing:-.5px}
-.prog{font-size:13px;color:var(--muted)}
-.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--seg);padding:4px;border-radius:12px}
-.seg button{height:40px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:15px;font-weight:500}
-.seg button.on{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.cats{display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:0 16px 12px;scrollbar-width:none}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.emo{font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;line-height:1}
+
+#app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;overflow:hidden;position:relative}
+header{padding:16px 20px 0;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.date{font-size:13px;font-weight:500;color:var(--muted)}
+h1{margin:2px 0 0;font-size:26px;font-weight:800;letter-spacing:-.03em}
+.pill{height:36px;padding:0 14px;border-radius:18px;border:0;background:var(--surface);box-shadow:var(--shadow);font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pill.on{background:var(--ink);color:var(--bg)}
+.prog{font-size:14px;font-weight:600;color:var(--ink2);background:var(--surface);box-shadow:var(--shadow);height:36px;padding:0 14px;border-radius:18px;display:flex;align-items:center}
+.prog b{color:var(--accent);margin-right:3px}
+
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--tile);padding:4px;border-radius:14px}
+.seg button{height:42px;border:0;border-radius:11px;background:transparent;color:var(--muted);font-size:15px;font-weight:600}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.seg .cnt{display:inline-flex;min-width:22px;height:20px;padding:0 6px;margin-left:6px;border-radius:10px;background:var(--accent);color:var(--onAccent);font-size:12px;font-weight:700;align-items:center;justify-content:center;vertical-align:1px}
+
+.cats{display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:0 20px 14px;scrollbar-width:none}
 .cats::-webkit-scrollbar{display:none}
-.cats button{flex-shrink:0;height:36px;padding:0 14px;border-radius:18px;font-size:14px;font-weight:500;white-space:nowrap;background:var(--surface);color:var(--muted);border:1px solid var(--line)}
-.cats button.on{background:var(--ink);color:var(--surface);border-color:var(--ink);font-weight:700}
-.listhead{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;min-height:46px}
-.listhead span{font-size:14px;color:var(--muted)}
-.ghost{height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:transparent;font-size:14px;font-weight:500}
-.ghost.armed{border-color:var(--warn);color:var(--warn);font-weight:700}
-main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line)}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px 16px 8px}
+.cats button{flex-shrink:0;height:38px;padding:0 14px 0 10px;border-radius:19px;border:0;background:var(--surface);box-shadow:var(--shadow);font-size:14px;font-weight:600;color:var(--ink2);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.cats button .emo{font-size:17px}
+.cats button.all{padding:0 16px}
+.cats button.on{background:var(--ink);color:var(--bg)}
+.edithint{font-size:13px;color:var(--accentInk);background:var(--accentSoft);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-weight:500}
+
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:104px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:2px 20px 8px}
 .cw{position:relative}
-.card{position:relative;width:100%;height:84px;padding:22px 8px 8px;border-radius:14px;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--surface);border:1px solid var(--line);font-size:15px;font-weight:700;line-height:1.3;word-break:keep-all;transition:transform .08s}
-.card:active{transform:scale(.97)}
-.card.on{background:var(--accentSoft);border:2px solid var(--accent);color:var(--ink)}
-.badge{position:absolute;top:8px;right:8px;min-width:24px;height:24px;padding:0 7px;border-radius:12px;background:var(--accent);color:var(--onAccent);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
-.reset{position:absolute;top:0;left:0;width:40px;height:40px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center}
-.reset span{width:24px;height:24px;border-radius:12px;background:var(--surface);border:1px solid var(--box);display:flex;align-items:center;justify-content:center;color:var(--muted)}
-.addrow{display:flex;gap:8px;padding:8px 16px 20px}
-.addrow input{flex:1;min-width:0;height:46px;border:1px dashed var(--box);border-radius:12px;background:transparent;padding:0 14px;font:inherit;font-size:16px;color:var(--ink)}
-.primary{height:46px;padding:0 18px;border:0;border-radius:12px;background:var(--accent);color:var(--onAccent);font-size:15px;font-weight:700}
-.rows{background:var(--surface);min-height:100%}
-.row{display:flex;gap:4px;padding:10px 12px 12px 4px;border-bottom:1px solid var(--line2)}
-.row.done{opacity:.55}
-.row.done .nm{text-decoration:line-through}
-.chk{width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.chk span{width:22px;height:22px;border-radius:6px;border:2px solid var(--box);background:var(--surface);display:flex;align-items:center;justify-content:center}
-.row.done .chk span{background:var(--accent);border-color:var(--accent)}
-.rb{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;padding-top:10px}
-.l1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.nm{font-size:16px;font-weight:700}
-.ct{font-size:12px;color:var(--muted);margin-left:6px}
-.lt{font-size:16px;font-weight:600;white-space:nowrap}
+.card{position:relative;width:100%;height:112px;padding:14px 6px 12px;border:0;border-radius:20px;background:var(--surface);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:transform .1s ease}
+.card:active{transform:scale(.96)}
+.card .ic{width:52px;height:52px;border-radius:26px;background:var(--tile);display:flex;align-items:center;justify-content:center;font-size:30px}
+.card .nm{font-size:14px;font-weight:600;line-height:1.25;text-align:center;word-break:keep-all;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
+.card.on{background:var(--accentSoft);box-shadow:inset 0 0 0 2px var(--accent)}
+.card.on .ic{background:var(--surface)}
+.card.on .nm{color:var(--accentInk)}
+.card.edit{box-shadow:inset 0 0 0 1.5px var(--line),var(--shadow)}
+.badge{position:absolute;top:8px;right:8px;min-width:26px;height:26px;padding:0 8px;border-radius:13px;background:var(--accent);color:var(--onAccent);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.pen{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:13px;background:var(--tile);color:var(--ink2);display:flex;align-items:center;justify-content:center}
+.reset{position:absolute;top:0;left:0;width:44px;height:44px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center}
+.reset span{width:26px;height:26px;border-radius:13px;background:var(--surface);box-shadow:0 0 0 1px var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+
+.addrow{display:flex;gap:8px;padding:12px 20px 8px}
+.addrow input{flex:1;min-width:0;height:48px;border:1.5px dashed var(--line);border-radius:14px;background:transparent;padding:0 16px;font:inherit;font-size:16px;color:var(--ink)}
+.addrow input:focus{border-style:solid;border-color:var(--accent);outline:none}
+.primary{height:48px;padding:0 20px;border:0;border-radius:14px;background:var(--accent);color:var(--onAccent);font-size:15px;font-weight:700}
+
+.listhead{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px}
+.listhead span{font-size:13px;color:var(--muted)}
+.ghost{height:36px;padding:0 14px;border-radius:18px;border:0;background:var(--surface);box-shadow:var(--shadow);font-size:14px;font-weight:600;color:var(--ink2)}
+.ghost.armed{background:var(--dangerSoft);color:var(--danger)}
+.rows{margin:2px 20px 0;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.row{display:flex;gap:10px;padding:12px 14px 14px 10px;border-bottom:1px solid var(--line2)}
+.row:last-child{border-bottom:0}
+.av{width:48px;height:48px;border-radius:24px;border:0;background:var(--tile);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;padding:0;position:relative}
+.row.done .av{background:var(--accent)}
+.row.done .nm2,.row.done .lt{color:var(--muted)}
+.row.done .nm2{text-decoration:line-through}
+.rb{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;padding-top:2px}
+.l1{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.nm2{font-size:16px;font-weight:700;display:block}
+.ct{font-size:12px;color:var(--muted);margin-top:2px;display:block}
+.lt{font-size:17px;font-weight:700;white-space:nowrap}
 .l2{display:flex;align-items:center;gap:8px}
-.pbox{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;padding-left:10px;height:40px;width:124px}
+.pbox{display:flex;align-items:center;background:var(--tile);border-radius:12px;padding-left:12px;height:40px;flex:1;max-width:136px;border:1.5px solid transparent}
 .pbox span{font-size:13px;color:var(--muted)}
-.pbox input{width:100%;min-width:0;border:0;background:transparent;font-size:16px;text-align:right;padding-right:10px;color:var(--ink)}
+.pbox input{width:100%;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;font-weight:600;text-align:right;padding-right:12px;color:var(--ink)}
 .pbox input:focus{outline:none}
-.pbox:focus-within{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.pbox:focus-within{border-color:var(--accent);background:var(--surface)}
 .x{font-size:13px;color:var(--muted)}
-.step{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;height:40px;overflow:hidden}
-.step button{width:40px;height:40px;border:0;background:var(--bg);font-size:18px}
-.step b{min-width:32px;text-align:center;font-size:15px;font-weight:600}
-.empty{padding:56px 24px;text-align:center;color:var(--muted);font-size:15px;line-height:1.6}
-footer{background:var(--bar);color:var(--barInk);padding:14px 20px 16px;display:flex;justify-content:space-between;align-items:center}
-footer small{display:block;font-size:13px;color:var(--barMuted)}
-footer .lbl{font-size:15px;font-weight:500}
-footer .tot{font-size:28px;font-weight:600;letter-spacing:-.5px}
-@media (prefers-reduced-motion:reduce){.card{transition:none}}
+.step{display:flex;align-items:center;background:var(--tile);border-radius:12px;height:40px}
+.step button{width:40px;height:40px;border:0;background:transparent;font-size:20px;font-weight:500;color:var(--ink2)}
+.step b{min-width:26px;text-align:center;font-size:16px;font-weight:700}
+.empty{margin:2px 20px 0;padding:56px 24px;text-align:center;color:var(--muted);font-size:15px;line-height:1.6;background:var(--surface);border-radius:20px;box-shadow:var(--shadow)}
+.empty .emo{font-size:40px;display:block;margin-bottom:12px}
+.share{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.share button{height:46px;border:0;border-radius:14px;background:var(--surface);box-shadow:var(--shadow);font-size:14px;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:6px}
+.share button .emo{font-size:17px}
+.new{display:inline-flex;align-items:center;height:18px;padding:0 6px;margin-left:6px;border-radius:9px;background:#E8590C;color:#FFFFFF;font-size:10px;font-weight:800;letter-spacing:.04em;vertical-align:3px}
+.sh-title{margin:0 0 4px;font-size:20px;font-weight:800}
+.sh-desc{margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5}
+.imp{width:100%;min-height:150px;border:1.5px solid var(--line);border-radius:14px;background:var(--tile);padding:14px;font:inherit;font-size:16px;line-height:1.5;color:var(--ink);resize:vertical}
+.imp:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+.pastebtn{width:100%;height:44px;margin:8px 0 14px;border:0;border-radius:12px;background:var(--accentSoft);color:var(--accentInk);font-size:14px;font-weight:700}
+.prev{background:var(--tile);border-radius:14px;padding:12px 14px;margin-bottom:16px;font-size:14px;line-height:1.6;color:var(--ink2)}
+.prev b{color:var(--accentInk)}
+.prev .muted{color:var(--muted)}
+.opt{width:100%;border:0;border-radius:16px;background:var(--tile);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;text-align:left}
+.opt .emo{font-size:28px;width:48px;height:48px;border-radius:24px;background:var(--surface);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.opt strong{display:block;font-size:16px;font-weight:800;margin-bottom:2px}
+.opt small{display:block;font-size:13px;color:var(--muted);line-height:1.45}
+.primary:disabled{opacity:.4;cursor:default}
+.sh-actions.two{grid-template-columns:1fr 1.4fr}
+.ghost2{height:50px;border:0;border-radius:14px;background:var(--tile);font-size:15px;font-weight:700;color:var(--ink2)}
+#toast{position:fixed;left:50%;bottom:calc(112px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:calc(100% - 40px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-size:14px;font-weight:600;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s;text-align:center}
+#toast.show{opacity:1}
+
+footer{position:absolute;left:12px;right:12px;bottom:12px;background:var(--bar);color:var(--barInk);border-radius:22px;padding:14px 18px 14px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.18);border:0;width:auto;text-align:left;font:inherit}
+footer small{display:block;font-size:13px;color:var(--barMuted);font-weight:500}
+footer .tot{font-size:26px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:6px}
+footer .tot i{font-style:normal;font-size:16px;font-weight:600}
+
+#sheetWrap{position:fixed;inset:0;z-index:20;display:none}
+#sheetWrap.open{display:block}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.36);border:0;width:100%;padding:0}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;background:var(--surface);border-radius:24px 24px 0 0;padding:10px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:86%;overflow-y:auto}
+.sheet.anim{animation:up .2s ease}
+@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.sh-top{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.sh-top .ic{width:60px;height:60px;border-radius:30px;background:var(--tile);display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0}
+.sh-top h2{margin:0;font-size:20px;font-weight:800}
+.sh-top p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.sh-label{font-size:13px;font-weight:700;color:var(--ink2);margin:0 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chips button{height:38px;padding:0 12px 0 10px;border-radius:19px;border:0;background:var(--tile);font-size:14px;font-weight:600;color:var(--ink2);display:flex;align-items:center;gap:6px}
+.chips button.on{background:var(--accent);color:var(--onAccent)}
+.emogrid{position:relative;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;margin-bottom:22px;max-height:196px;overflow-y:auto;background:var(--tile);border-radius:16px;padding:8px}
+.emogrid button{aspect-ratio:1;min-height:36px;border:0;border-radius:10px;background:transparent;font-size:22px;padding:0;display:flex;align-items:center;justify-content:center}
+.emogrid button.on{background:var(--surface);box-shadow:inset 0 0 0 2px var(--accent)}
+.sh-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+.danger{height:50px;border:0;border-radius:14px;background:var(--dangerSoft);color:var(--danger);font-size:15px;font-weight:700}
+.danger.armed{background:var(--danger);color:#FFFFFF}
+.sh-actions .primary{height:50px}
+@media (prefers-reduced-motion:reduce){.card,.sheet{transition:none;animation:none}}
 </style>
 </head>
 <body>
@@ -112,7 +184,7 @@ footer .tot{font-size:28px;font-weight:600;letter-spacing:-.5px}
         <div class="date" id="date"></div>
         <h1>오늘 장보기</h1>
       </div>
-      <div class="prog" id="prog"></div>
+      <div id="topRight"></div>
     </div>
     <div class="seg">
       <button data-act="tab" data-v="pick" id="tPick">품목 고르기</button>
@@ -121,11 +193,13 @@ footer .tot{font-size:28px;font-weight:600;letter-spacing:-.5px}
     <div id="sub"></div>
   </header>
   <main id="main"></main>
-  <footer>
-    <div><small id="cnt"></small><span class="lbl">합계</span></div>
-    <div class="tot mono" id="tot"></div>
+  <footer id="bar" role="button" tabindex="0" data-act="toList">
+    <div><small id="cnt"></small><span id="barLbl" style="font-size:15px;font-weight:600">합계</span></div>
+    <div class="tot num"><span id="tot"></span><i>원</i></div>
   </footer>
 </div>
+<div id="sheetWrap"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 <script>
 (function(){
   var CATALOG = {
@@ -137,47 +211,67 @@ footer .tot{font-size:28px;font-weight:600;letter-spacing:-.5px}
     '음료·주류':['물','소주','맥주','탄산수','커피','주스'],
     '생활용품':['휴지','키친타월','주방세제','쓰레기봉투']
   };
+  var CAT_ICON = {'과일·채소':'🥬','정육·수산':'🥩','유제품·계란':'🥛','가공·냉동':'🥫','과자·간식':'🍪','음료·주류':'🧃','생활용품':'🧻','기타':'🛒'};
+  var ICONS = {
+    '메론':'🍈','샤인머스캣':'🍇','바나나':'🍌','사과':'🍎','귤':'🍊','딸기':'🍓','토마토':'🍅','양파':'🧅','대파':'🌿','감자':'🥔','당근':'🥕','애호박':'🥒','오이':'🥒','상추':'🥬','버섯':'🍄','마늘':'🧄',
+    '갈매기살':'🥩','삼겹살':'🥓','목살':'🥩','소고기 국거리':'🥩','닭가슴살':'🍗','연어':'🍣','고등어':'🐟','새우':'🦐','오징어':'🦑',
+    '우유':'🥛','계란':'🥚','요거트':'🥣','치즈':'🧀','버터':'🧈','두부':'🧊',
+    '떡갈비':'🍖','카레':'🍛','라면':'🍜','햄':'🥓','만두':'🥟','붕어빵':'🐟','어묵':'🍢','김':'🍙','참치캔':'🥫','즉석밥':'🍚',
+    '맥스봉':'🌭','눈을감자':'🍟','무뚝뚝':'🍘','호두':'🌰','초콜릿':'🍫','아이스크림':'🍨',
+    '물':'💧','소주':'🍶','맥주':'🍺','탄산수':'🫧','커피':'☕','주스':'🧃',
+    '휴지':'🧻','키친타월':'🧻','주방세제':'🧴','쓰레기봉투':'🗑️'
+  };
+  var PALETTE = '🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍈 🍑 🥭 🍍 🥝 🍅 🥑 🥦 🥬 🥒 🌶️ 🌽 🥕 🧄 🧅 🥔 🍄 🌿 🥜 🌰 🍞 🥐 🥖 🧀 🥚 🧈 🥞 🥓 🥩 🍗 🍖 🌭 🍔 🍟 🍕 🥪 🌮 🍝 🍜 🍲 🍛 🍣 🍱 🥟 🦪 🍤 🍙 🍚 🍘 🍢 🍡 🍧 🍨 🍦 🧁 🍰 🍮 🍭 🍬 🍫 🍿 🍩 🍪 🥛 ☕ 🍵 🧃 🥤 🧋 🍶 🍺 🍷 🥂 🧊 💧 🫧 🐟 🦐 🦑 🦀 🧂 🥫 🥣 🧻 🧴 🧽 🧼 🗑️ 🛒'.split(' ');
   var PRICES = {'메론':9990,'샤인머스캣':8990,'계란':5990,'호두':8990,'연어':22900,'갈매기살':8887,'떡갈비':10480,'맥스봉':7480,'우유':5880,'카레':4700,'눈을감자':1190,'무뚝뚝':1690,'붕어빵':4320,'물':3600,'소주':2380};
   var LS = 'jangbogi-v1';
 
   function fresh(){
-    return {
-      catalog: JSON.parse(JSON.stringify(CATALOG)),
-      prices: Object.assign({}, PRICES),
-      cart: [],
-      updatedAt: 0
-    };
+    return { catalog: JSON.parse(JSON.stringify(CATALOG)), prices: Object.assign({}, PRICES), icons: {}, cart: [], updatedAt: 0 };
   }
   function valid(s){ return s && typeof s==='object' && s.catalog && s.prices && Array.isArray(s.cart); }
   function loadLocal(){ try{ var s=JSON.parse(localStorage.getItem(LS)); return valid(s)?s:null; }catch(e){ return null; } }
   function saveLocal(){ try{ localStorage.setItem(LS, JSON.stringify(S)); }catch(e){} }
+  function persist(){ S.updatedAt = Date.now(); saveLocal(); }
 
   var S = loadLocal() || fresh();
-  var ui = {tab:'pick', cat:'전체', draft:'', armed:false};
-  function persist(){
-    S.updatedAt = Date.now();
-    saveLocal();
-  }
+  if(!S.icons) S.icons = {};
+  var ui = {tab:'pick', cat:'전체', draft:'', armed:false, editMode:false, edit:null, editNew:false, delArmed:false, modal:null, impText:''};
 
   var $ = function(id){ return document.getElementById(id); };
   function fmt(n){ return Number(n||0).toLocaleString('ko-KR'); }
   function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-  function catOf(name){
-    for(var c in S.catalog){ if(S.catalog[c].indexOf(name)>-1) return c; }
-    return '기타';
+  function catOf(name){ for(var c in S.catalog){ if(S.catalog[c].indexOf(name)>-1) return c; } return '기타'; }
+  var GUESS = [
+    [['계란','달걀','구운란','메추리'],'🥚'],[['우유','라떼'],'🥛'],[['치즈'],'🧀'],[['요거트','요구르트'],'🥣'],[['버터'],'🧈'],
+    [['닭','치킨'],'🍗'],[['삼겹','베이컨','돼지'],'🥓'],[['소고기','한우','등심','갈비','고기','살'],'🥩'],
+    [['새우'],'🦐'],[['오징어','문어','쭈꾸미'],'🦑'],[['게','꽃게','대게'],'🦀'],[['굴','조개'],'🦪'],[['연어','회','초밥'],'🍣'],[['생선','고등어','갈치','조기','멸치','어'],'🐟'],
+    [['사과'],'🍎'],[['배'],'🍐'],[['귤','오렌지','한라봉','천혜향'],'🍊'],[['레몬'],'🍋'],[['바나나'],'🍌'],[['수박'],'🍉'],[['포도','머스캣'],'🍇'],[['딸기'],'🍓'],[['블루베리'],'🫐'],[['메론','멜론','참외'],'🍈'],[['복숭아','자두'],'🍑'],[['망고'],'🥭'],[['파인애플'],'🍍'],[['키위'],'🥝'],
+    [['토마토'],'🍅'],[['아보카도'],'🥑'],[['브로콜리'],'🥦'],[['배추','상추','양배추','시금치','깻잎','쌈'],'🥬'],[['오이','호박'],'🥒'],[['고추'],'🌶️'],[['옥수수'],'🌽'],[['당근'],'🥕'],[['마늘'],'🧄'],[['양파'],'🧅'],[['감자','고구마'],'🥔'],[['버섯'],'🍄'],[['파','부추','미나리'],'🌿'],
+    [['빵','식빵'],'🍞'],[['떡'],'🍡'],[['라면','국수','우동'],'🍜'],[['파스타','스파게티'],'🍝'],[['만두'],'🥟'],[['어묵'],'🍢'],[['김밥','김'],'🍙'],[['밥','쌀'],'🍚'],[['카레'],'🍛'],[['피자'],'🍕'],[['햄버거'],'🍔'],[['소시지','핫도그'],'🌭'],[['캔','통조림','참치'],'🥫'],
+    [['과자','쿠키'],'🍪'],[['초콜릿','초코'],'🍫'],[['아이스크림'],'🍨'],[['젤리','사탕'],'🍬'],[['케이크'],'🍰'],[['견과','호두','아몬드','땅콩'],'🥜'],
+    [['커피'],'☕'],[['차','녹차'],'🍵'],[['주스'],'🧃'],[['콜라','사이다','음료'],'🥤'],[['맥주'],'🍺'],[['소주','막걸리'],'🍶'],[['와인'],'🍷'],[['물','생수'],'💧'],[['얼음'],'🧊'],
+    [['휴지','화장지','타월'],'🧻'],[['세제','샴푸','린스'],'🧴'],[['비누'],'🧼'],[['수세미','스펀지'],'🧽'],[['봉투'],'🗑️'],[['소금','설탕'],'🧂']
+  ];
+  function guessIcon(name){
+    for(var i=0;i<GUESS.length;i++){ var ks=GUESS[i][0]; for(var j=0;j<ks.length;j++){ if(name.indexOf(ks[j])>-1) return GUESS[i][1]; } }
+    return null;
   }
+  function iconOf(name){ return S.icons[name] || ICONS[name] || CAT_ICON[catOf(name)] || '🛒'; }
+  function catIcon(c){ return CAT_ICON[c] || '🛒'; }
   function findIdx(name){ for(var i=0;i<S.cart.length;i++){ if(S.cart[i].name===name) return i; } return -1; }
 
-  var resetIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><polyline points="3 3 3 9 9 9"></polyline></svg>';
-  var checkIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  var resetIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><polyline points="3 3 3 9 9 9"></polyline></svg>';
+  var penIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>';
+  var checkIcon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
 
   function totals(){
     var t=0,q=0,c=0;
     S.cart.forEach(function(it){ t+=it.price*it.qty; q+=it.qty; if(it.checked) c++; });
-    $('tot').textContent = fmt(t)+'원';
-    $('cnt').textContent = S.cart.length+'품목 · '+q+'개';
-    $('prog').textContent = '담음 '+c+' / '+S.cart.length;
-    $('tList').textContent = '담은 목록 '+S.cart.length;
+    $('tot').textContent = fmt(t);
+    $('cnt').textContent = S.cart.length ? (S.cart.length+'품목 · '+q+'개') : '아직 담은 품목이 없어요';
+    $('barLbl').textContent = ui.tab==='pick' && S.cart.length ? '담은 목록 보기 ›' : '합계';
+    $('tList').innerHTML = '담은 목록'+(S.cart.length?'<span class="cnt num">'+S.cart.length+'</span>':'');
+    if(ui.tab==='list') $('topRight').innerHTML = '<div class="prog num"><b>'+c+'</b>/ '+S.cart.length+' 담음</div>';
   }
 
   var currentCards = [];
@@ -186,42 +280,166 @@ footer .tot{font-size:28px;font-weight:600;letter-spacing:-.5px}
     $('date').textContent = (d.getMonth()+1)+'월 '+d.getDate()+'일 '+['일','월','화','수','목','금','토'][d.getDay()]+'요일';
     $('tPick').className = ui.tab==='pick'?'on':'';
     $('tList').className = ui.tab==='list'?'on':'';
-    var sub = $('sub'), main = $('main');
+    var sub = $('sub'), main = $('main'), keep = main.scrollTop;
     if(ui.tab==='pick'){
+      $('topRight').innerHTML = '<button class="pill'+(ui.editMode?' on':'')+'" data-act="editMode">'+(ui.editMode?'완료':penIcon+'편집')+'</button>';
       var cats = ['전체'].concat(Object.keys(S.catalog));
       if(cats.indexOf(ui.cat)<0) ui.cat='전체';
       sub.innerHTML = '<div class="cats">'+cats.map(function(c){
-        return '<button data-act="cat" data-v="'+esc(c)+'" class="'+(c===ui.cat?'on':'')+'">'+esc(c)+'</button>';
-      }).join('')+'</div>';
+        var on = c===ui.cat?' on':'';
+        if(c==='전체') return '<button data-act="cat" data-v="전체" class="all'+on+'">전체</button>';
+        return '<button data-act="cat" data-v="'+esc(c)+'" class="'+on.trim()+'"><span class="emo">'+catIcon(c)+'</span>'+esc(c)+'</button>';
+      }).join('')+'</div>'+(ui.editMode?'<div class="edithint">카드를 누르면 아이콘·카테고리를 바꾸거나 삭제할 수 있어요</div>':'');
       currentCards = ui.cat==='전체'
         ? Object.keys(S.catalog).reduce(function(a,c){ return a.concat(S.catalog[c]); },[])
         : S.catalog[ui.cat].slice();
       var html = '<div class="grid">'+currentCards.map(function(n,i){
         var k = findIdx(n), q = k>-1?S.cart[k].qty:0;
-        return '<div class="cw"><button class="card'+(q?' on':'')+'" data-act="add" data-i="'+i+'" aria-label="'+esc(n)+' 담기">'+esc(n)+(q?'<span class="badge mono">'+q+'</span>':'')+'</button>'+
+        if(ui.editMode){
+          return '<div class="cw"><button class="card edit" data-act="open" data-i="'+i+'" aria-label="'+esc(n)+' 편집"><span class="ic emo">'+iconOf(n)+'</span><span class="nm">'+esc(n)+'</span><span class="pen">'+penIcon+'</span></button></div>';
+        }
+        return '<div class="cw"><button class="card'+(q?' on':'')+'" data-act="add" data-i="'+i+'" aria-label="'+esc(n)+' 담기"><span class="ic emo">'+iconOf(n)+'</span><span class="nm">'+esc(n)+'</span>'+(q?'<span class="badge num">'+q+'</span>':'')+'</button>'+
           (q?'<button class="reset" data-act="reset" data-i="'+i+'" aria-label="'+esc(n)+' 리셋"><span>'+resetIcon+'</span></button>':'')+'</div>';
       }).join('')+'</div>';
-      html += '<div class="addrow"><input id="draft" aria-label="목록에 없는 품목" placeholder="목록에 없으면 직접 입력" enterkeyhint="done"><button class="primary" data-act="addDraft">추가</button></div>';
-      var keep = main.scrollTop;
+      if(!ui.editMode){
+        var target = ui.cat==='전체'?'기타':ui.cat;
+        html += '<div class="addrow"><input id="draft" aria-label="새 품목 이름" placeholder="'+esc(target)+'에 품목 추가" enterkeyhint="done"><button class="primary" data-act="addDraft">추가</button></div>';
+      }
       main.innerHTML = html;
       main.scrollTop = keep;
-      $('draft').value = ui.draft;
+      if($('draft')) $('draft').value = ui.draft;
     } else {
-      sub.innerHTML = '<div class="listhead"><span>체크하면 카트에 담은 표시</span><button class="ghost'+(ui.armed?' armed':'')+'" data-act="clearAll">'+(ui.armed?'한 번 더 누르면 비워요':'전체 리셋')+'</button></div>';
+      sub.innerHTML = '<div class="share"><button data-act="openImport"><span class="emo">📋</span>받은 목록 넣기</button><button data-act="openSend"><span class="emo">📤</span>목록 보내기</button></div><div class="listhead"><span>아이콘을 누르면 담음 표시돼요</span><button class="ghost'+(ui.armed?' armed':'')+'" data-act="clearAll">'+(ui.armed?'한 번 더 누르면 비워요':'전체 리셋')+'</button></div>';
       if(!S.cart.length){
-        main.innerHTML = '<div class="rows"><div class="empty">아직 담은 품목이 없어요.<br>품목 고르기에서 카드를 눌러 담아보세요.</div></div>';
+        main.innerHTML = '<div class="empty"><span class="emo">🧺</span>아직 담은 품목이 없어요.<br>품목 고르기에서 카드를 눌러 담아보세요.</div>';
       } else {
         main.innerHTML = '<div class="rows">'+S.cart.map(function(it,i){
-          return '<div class="row'+(it.checked?' done':'')+'" id="r'+i+'">'+
-            '<button class="chk" data-act="toggle" data-i="'+i+'" aria-label="'+esc(it.name)+' 담음 표시" aria-pressed="'+it.checked+'"><span>'+(it.checked?checkIcon:'')+'</span></button>'+
-            '<div class="rb"><div class="l1"><div><span class="nm">'+esc(it.name)+'</span><span class="ct">'+esc(catOf(it.name))+'</span></div>'+
-            '<span class="lt mono" id="lt'+i+'">'+(it.price?fmt(it.price*it.qty):'—')+'</span></div>'+
-            '<div class="l2"><label class="pbox"><span>₩</span><input class="mono" data-i="'+i+'" inputmode="numeric" placeholder="가격" aria-label="'+esc(it.name)+' 단가" value="'+(it.price?fmt(it.price):'')+'"></label>'+
-            '<span class="x">×</span><div class="step"><button data-act="dec" data-i="'+i+'" aria-label="수량 줄이기">−</button><b class="mono">'+it.qty+'</b><button data-act="inc" data-i="'+i+'" aria-label="수량 늘리기">+</button></div></div></div></div>';
+          return '<div class="row'+(it.checked?' done':'')+'">'+
+            '<button class="av emo" data-act="toggle" data-i="'+i+'" aria-label="'+esc(it.name)+' 담음 표시" aria-pressed="'+it.checked+'">'+(it.checked?checkIcon:iconOf(it.name))+'</button>'+
+            '<div class="rb"><div class="l1"><div><span class="nm2">'+esc(it.name)+(it.isNew?'<span class="new">NEW</span>':'')+'</span><span class="ct">'+esc(catOf(it.name))+'</span></div>'+
+            '<span class="lt num" id="lt'+i+'">'+(it.price?fmt(it.price*it.qty)+'원':'—')+'</span></div>'+
+            '<div class="l2"><label class="pbox"><span>₩</span><input class="num" data-i="'+i+'" inputmode="numeric" placeholder="가격" aria-label="'+esc(it.name)+' 단가" value="'+(it.price?fmt(it.price):'')+'"></label>'+
+            '<span class="x">×</span><div class="step"><button data-act="dec" data-i="'+i+'" aria-label="수량 줄이기">−</button><b class="num">'+it.qty+'</b><button data-act="inc" data-i="'+i+'" aria-label="수량 늘리기">+</button></div></div></div></div>';
         }).join('')+'</div>';
+        main.scrollTop = keep;
       }
     }
     totals();
+    renderSheet();
+  }
+
+  var toastTimer=null;
+  function toast(msg){ var t=$('toast'); t.textContent=msg; t.className='show'; clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.className=''; },2600); }
+
+  function parseList(text){
+    var out=[], seen={};
+    String(text||'').split(/\n|,(?!\d{3})|，/).forEach(function(raw){
+      var line = raw.trim();
+      if(!line) return;
+      if(/https?:\/\//i.test(line)) return;
+      if(/장보기|^합계|^총\s|^총액|^총합/.test(line)) return;
+      var price = 0, pm = line.match(/([\d][\d,]*)\s*원/);
+      if(pm) price = parseInt(pm[1].replace(/,/g,''),10)||0;
+      line = line.replace(/=.*$/,'');
+      var qty = 1, qm = line.match(/[x×*]\s*(\d+)/i);
+      if(qm){ qty=+qm[1]; line=line.replace(qm[0],''); }
+      line = line.replace(/[\d][\d,]*\s*원/g,'').replace(/가격 미입력/g,'');
+      if(!qm){ var tm = line.match(/(\d+)\s*(개|봉|팩|병|캔|통|박스|묶음|단|마리|모|판|EA|ea)?\s*$/); if(tm){ qty=+tm[1]; line=line.slice(0,tm.index); } }
+      line = line.replace(/^[\s\-•·*▪✓✔☐☑]+/,'').replace(/^\d+[.)]\s*/,'');
+      line = line.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu,'').replace(/[:：]\s*$/,'').trim();
+      if(!line || line.length>20) return;
+      if(qty<1||qty>99) qty=1;
+      if(seen[line]!=null){ out[seen[line]].qty+=qty; return; }
+      seen[line]=out.length; out.push({name:line, qty:qty, price:price});
+    });
+    return out;
+  }
+  function splitImport(list){
+    var fresh=[], keep=[];
+    list.forEach(function(x){ (findIdx(x.name)>-1?keep:fresh).push(x); });
+    return {fresh:fresh, keep:keep};
+  }
+  function mergeImport(list){
+    S.cart.forEach(function(it){ it.isNew=false; });
+    var added=[];
+    list.forEach(function(x){
+      var k=findIdx(x.name);
+      if(k>-1){ if(!S.cart[k].price && x.price){ S.cart[k].price=x.price; S.prices[x.name]=x.price; } return; }
+      var exists=false; for(var c in S.catalog){ if(S.catalog[c].indexOf(x.name)>-1){ exists=true; break; } }
+      if(!exists){ if(!S.catalog['기타']) S.catalog['기타']=[]; S.catalog['기타'].push(x.name); var g=guessIcon(x.name); if(g && !S.icons[x.name]) S.icons[x.name]=g; }
+      if(x.price && !S.prices[x.name]) S.prices[x.name]=x.price;
+      S.cart.push({name:x.name, qty:x.qty, price:S.prices[x.name]||x.price||0, checked:false, isNew:true});
+      added.push(x.name);
+    });
+    return added;
+  }
+  function shareText(withPrice){
+    if(withPrice){
+      var t=0, lines=S.cart.map(function(it){ t+=it.price*it.qty; return (it.checked?'✓ ':'')+it.name+' '+(it.price?fmt(it.price)+'원':'가격 미입력')+' × '+it.qty+(it.price?' = '+fmt(it.price*it.qty)+'원':''); });
+      return '🧾 장보기 결과\n'+lines.join('\n')+'\n\n합계 '+fmt(t)+'원';
+    }
+    return '🛒 장보기 목록\n'+S.cart.map(function(it){ return it.name+(it.qty>1?' '+it.qty:''); }).join('\n');
+  }
+  async function doShare(withPrice){
+    var text = shareText(withPrice);
+    ui.modal=null; render();
+    try{ if(navigator.share){ await navigator.share({text:text}); return; } }catch(e){ if(e && e.name==='AbortError') return; }
+    try{ await navigator.clipboard.writeText(text); toast('복사했어요. 카톡 대화창에 붙여넣기 해주세요'); }
+    catch(e){ window.prompt('아래 내용을 복사해서 보내주세요', text); }
+  }
+  function updatePreview(){
+    var box=$('impPrev'), btn=$('impGo'); if(!box) return;
+    var list=parseList(ui.impText), sp=splitImport(list);
+    if(!list.length){ box.innerHTML='<span class="muted">붙여넣으면 여기에 미리 보여드려요</span>'; btn.disabled=true; return; }
+    var html='';
+    if(sp.fresh.length) html+='새 품목 <b>'+sp.fresh.length+'개</b>: '+sp.fresh.map(function(x){ return esc(x.name)+(x.qty>1?' '+x.qty:''); }).join(', ');
+    else html+='새로 추가할 품목이 없어요';
+    if(sp.keep.length) html+='<br><span class="muted">이미 있는 '+sp.keep.length+'개는 내가 입력한 금액·수량 그대로 유지돼요</span>';
+    box.innerHTML=html; btn.disabled=!sp.fresh.length;
+  }
+
+  function renderSheet(){
+    var w = $('sheetWrap');
+    if(ui.modal==='import' || ui.modal==='send'){
+      var was = w.className==='open';
+      w.className='open';
+      if(ui.modal==='import'){
+        w.innerHTML = '<button class="scrim" data-act="closeModal" aria-label="닫기"></button><div class="sheet'+(was?'':' anim')+'" role="dialog" aria-modal="true" aria-label="받은 목록 넣기"><div class="grab"></div>'+
+          '<h2 class="sh-title">받은 목록 넣기</h2><p class="sh-desc">카톡에서 복사한 목록을 아래 칸에 붙여넣어 주세요.<br>칸을 길게 누르면 붙여넣기가 나와요.</p>'+
+          '<textarea id="imp" class="imp" aria-label="받은 목록" placeholder="예)&#10;우유 2&#10;두부&#10;대파"></textarea>'+
+          '<button class="pastebtn" data-act="pasteClip">📋 복사한 내용 바로 붙여넣기</button>'+
+          '<div class="prev" id="impPrev"></div>'+
+          '<div class="sh-actions two"><button class="ghost2" data-act="closeModal">취소</button><button class="primary" id="impGo" data-act="doImport">합치기</button></div></div>';
+        $('imp').value = ui.impText; updatePreview();
+      } else {
+        w.innerHTML = '<button class="scrim" data-act="closeModal" aria-label="닫기"></button><div class="sheet'+(was?'':' anim')+'" role="dialog" aria-modal="true" aria-label="목록 보내기"><div class="grab"></div>'+
+          '<h2 class="sh-title">목록 보내기</h2><p class="sh-desc">누르면 카톡 등으로 보낼 수 있어요.</p>'+
+          '<button class="opt" data-act="sendList"><span class="emo">🛒</span><span><strong>장볼 목록 보내기</strong><small>품목과 수량만 보내요. 장보기 전에 쓰세요.</small></span></button>'+
+          '<button class="opt" data-act="sendResult"><span class="emo">🧾</span><span><strong>장본 결과 보내기</strong><small>품목별 금액, 수량, 합계까지 보내요.</small></span></button>'+
+          '<div class="sh-actions" style="grid-template-columns:1fr"><button class="ghost2" data-act="closeModal">닫기</button></div></div>';
+      }
+      return;
+    }
+    if(!ui.edit){ w.className=''; w.innerHTML=''; return; }
+    var n = ui.edit, cur = catOf(n), ic = iconOf(n);
+    var cats = Object.keys(S.catalog); if(cats.indexOf('기타')<0) cats.push('기타');
+    var scroll = w.querySelector('.emogrid'); var sTop = scroll?scroll.scrollTop:0;
+    var sheetScroll = w.querySelector('.sheet'); var shTop = sheetScroll?sheetScroll.scrollTop:0;
+    var wasOpen = w.className==='open';
+    w.className='open';
+    w.innerHTML = '<button class="scrim" data-act="close" aria-label="닫기"></button>'+
+      '<div class="sheet'+(wasOpen?'':' anim')+'" role="dialog" aria-modal="true" aria-label="'+esc(n)+' 편집"><div class="grab"></div>'+
+      '<div class="sh-top"><div class="ic emo">'+ic+'</div><div><h2>'+esc(n)+'</h2><p>'+(ui.editNew?'새 품목 · 아이콘을 골라주세요':esc(cur)+(S.prices[n]?' · 최근 '+fmt(S.prices[n])+'원':''))+'</p></div></div>'+
+      '<p class="sh-label">카테고리 옮기기</p><div class="chips">'+cats.map(function(c){
+        return '<button data-act="move" data-v="'+esc(c)+'" class="'+(c===cur?'on':'')+'"><span class="emo">'+catIcon(c)+'</span>'+esc(c)+'</button>';
+      }).join('')+'</div>'+
+      '<p class="sh-label">아이콘 바꾸기</p><div class="emogrid">'+PALETTE.map(function(e){
+        return '<button class="emo'+(e===ic?' on':'')+'" data-act="icon" data-v="'+e+'" aria-label="아이콘 '+e+'">'+e+'</button>';
+      }).join('')+'</div>'+
+      '<div class="sh-actions"><button class="danger'+(ui.delArmed?' armed':'')+'" data-act="del">'+(ui.delArmed?'한 번 더 누르면 삭제':'카드 삭제')+'</button><button class="primary" data-act="close">완료</button></div></div>';
+    var g = w.querySelector('.emogrid');
+    if(g){ if(wasOpen) g.scrollTop = sTop; else { var on = g.querySelector('.on'); if(on) g.scrollTop = Math.max(0, on.offsetTop - 8); } }
+    var sh = w.querySelector('.sheet'); if(sh) sh.scrollTop = shTop;
   }
 
   function addItem(name){
@@ -229,55 +447,101 @@ footer .tot{font-size:28px;font-weight:600;letter-spacing:-.5px}
     if(k>-1) S.cart[k].qty++;
     else S.cart.push({name:name, qty:1, price:S.prices[name]||0, checked:false});
   }
+  function removeFromCatalog(name){
+    for(var c in S.catalog){ var j=S.catalog[c].indexOf(name); if(j>-1) S.catalog[c].splice(j,1); }
+    if(S.catalog['기타'] && !S.catalog['기타'].length) delete S.catalog['기타'];
+  }
 
-  var armTimer = null;
-  document.getElementById('app').addEventListener('click', function(e){
-    var b = e.target.closest('[data-act]'); if(!b) return;
-    var act = b.getAttribute('data-act'), i = +b.getAttribute('data-i');
-    if(act!=='clearAll' && ui.armed){ ui.armed=false; }
-    if(act==='tab'){ ui.tab=b.getAttribute('data-v'); ui.armed=false; $('main').scrollTop=0; render(); return; }
-    if(act==='cat'){ ui.cat=b.getAttribute('data-v'); $('main').scrollTop=0; render(); return; }
-    if(act==='add'){ addItem(currentCards[i]); persist(); render(); return; }
-    if(act==='reset'){ var k=findIdx(currentCards[i]); if(k>-1) S.cart.splice(k,1); persist(); render(); return; }
-    if(act==='addDraft'){
-      var n = ($('draft').value||'').trim(); if(!n) return;
-      if(catOf(n)==='기타'){ if(!S.catalog['기타']) S.catalog['기타']=[]; if(S.catalog['기타'].indexOf(n)<0) S.catalog['기타'].push(n); }
-      addItem(n); ui.draft=''; persist(); render(); return;
+  var armTimer = null, delTimer = null;
+  function onAct(b){
+    var act = b.getAttribute('data-act'), i = +b.getAttribute('data-i'), v = b.getAttribute('data-v');
+    if(act!=='clearAll') ui.armed=false;
+    if(act!=='del') ui.delArmed=false;
+    switch(act){
+      case 'tab': ui.tab=v; ui.editMode=false; $('main').scrollTop=0; break;
+      case 'toList': if(ui.tab==='pick' && S.cart.length){ ui.tab='list'; ui.editMode=false; $('main').scrollTop=0; } else return; break;
+      case 'cat': ui.cat=v; $('main').scrollTop=0; break;
+      case 'editMode': ui.editMode=!ui.editMode; break;
+      case 'add': addItem(currentCards[i]); persist(); break;
+      case 'reset': var k=findIdx(currentCards[i]); if(k>-1) S.cart.splice(k,1); persist(); break;
+      case 'open': ui.edit=currentCards[i]; break;
+      case 'close': ui.edit=null; ui.editNew=false; break;
+      case 'move':
+        if(v===catOf(ui.edit)) return;
+        removeFromCatalog(ui.edit);
+        if(!S.catalog[v]) S.catalog[v]=[];
+        S.catalog[v].push(ui.edit); persist(); break;
+      case 'icon': S.icons[ui.edit]=v; persist(); break;
+      case 'del':
+        clearTimeout(delTimer);
+        if(!ui.delArmed){ ui.delArmed=true; delTimer=setTimeout(function(){ ui.delArmed=false; renderSheet(); },3000); break; }
+        var nm = ui.edit; removeFromCatalog(nm);
+        var kk=findIdx(nm); if(kk>-1) S.cart.splice(kk,1);
+        delete S.prices[nm]; delete S.icons[nm];
+        ui.edit=null; ui.editNew=false; ui.delArmed=false; persist(); break;
+      case 'addDraft':
+        var n = (($('draft')||{}).value||'').trim(); if(!n) return;
+        var target = ui.cat==='전체' ? '기타' : ui.cat;
+        var exists=false; for(var c in S.catalog){ if(S.catalog[c].indexOf(n)>-1){ exists=true; break; } }
+        if(!exists){
+          if(!S.catalog[target]) S.catalog[target]=[];
+          S.catalog[target].push(n);
+          var g = guessIcon(n); if(g) S.icons[n]=g;
+          ui.edit=n; ui.editNew=true;
+        }
+        addItem(n); ui.draft=''; persist(); break;
+      case 'openImport': ui.modal='import'; break;
+      case 'openSend':
+        if(!S.cart.length){ toast('보낼 품목이 없어요. 먼저 품목을 담아주세요'); return; }
+        ui.modal='send'; break;
+      case 'closeModal': ui.modal=null; break;
+      case 'sendList': doShare(false); return;
+      case 'sendResult': doShare(true); return;
+      case 'pasteClip':
+        (async function(){ try{ var t=await navigator.clipboard.readText(); if(t){ ui.impText=t; $('imp').value=t; updatePreview(); } else toast('복사한 내용이 없어요'); }catch(e){ toast('칸을 길게 눌러 붙여넣기 해주세요'); } })();
+        return;
+      case 'doImport':
+        var added = mergeImport(parseList(ui.impText));
+        ui.modal=null; ui.impText=''; ui.tab='list'; ui.editMode=false; persist();
+        render(); $('main').scrollTop = $('main').scrollHeight;
+        toast(added.length ? added.slice(0,4).join(', ')+(added.length>4?' 외 '+(added.length-4)+'개':'')+' 추가했어요' : '새로 추가된 품목이 없어요');
+        return;
+      case 'toggle': S.cart[i].checked=!S.cart[i].checked; S.cart[i].isNew=false; persist(); break;
+      case 'inc': S.cart[i].qty++; S.cart[i].isNew=false; persist(); break;
+      case 'dec': if(S.cart[i].qty<=1) S.cart.splice(i,1); else S.cart[i].qty--; persist(); break;
+      case 'clearAll':
+        clearTimeout(armTimer);
+        if(!ui.armed){ ui.armed=true; armTimer=setTimeout(function(){ ui.armed=false; if(ui.tab==='list') render(); },3000); break; }
+        ui.armed=false; S.cart=[]; persist(); break;
+      default: return;
     }
-    if(act==='toggle'){ S.cart[i].checked=!S.cart[i].checked; persist(); render(); return; }
-    if(act==='inc'){ S.cart[i].qty++; persist(); render(); return; }
-    if(act==='dec'){ if(S.cart[i].qty<=1) S.cart.splice(i,1); else S.cart[i].qty--; persist(); render(); return; }
-    if(act==='clearAll'){
-      clearTimeout(armTimer);
-      if(!ui.armed){ ui.armed=true; render(); armTimer=setTimeout(function(){ ui.armed=false; if(ui.tab==='list') render(); },3000); return; }
-      ui.armed=false; S.cart=[]; persist(); render(); return;
-    }
+    render();
+  }
+  document.addEventListener('click', function(e){ var b=e.target.closest('[data-act]'); if(b) onAct(b); });
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape' && (ui.edit||ui.modal)){ ui.edit=null; ui.editNew=false; ui.modal=null; render(); return; }
+    if((e.key==='Enter'||e.key===' ') && e.target.id==='bar'){ e.preventDefault(); onAct(e.target); return; }
+    if(e.key==='Enter' && e.target.id==='draft'){ e.preventDefault(); onAct({getAttribute:function(k){ return k==='data-act'?'addDraft':null; }}); return; }
+    if(e.key==='Enter' && e.target.closest && e.target.closest('.pbox')){ e.target.blur(); }
   });
-
-  document.getElementById('app').addEventListener('input', function(e){
+  document.addEventListener('input', function(e){
     var t = e.target;
     if(t.id==='draft'){ ui.draft=t.value; return; }
+    if(t.id==='imp'){ ui.impText=t.value; updatePreview(); return; }
     if(t.hasAttribute('data-i') && t.closest('.pbox')){
       var i = +t.getAttribute('data-i'), it = S.cart[i]; if(!it) return;
       var v = parseInt(String(t.value).replace(/[^0-9]/g,''),10) || 0;
       it.price = v; if(v) S.prices[it.name] = v;
-      $('lt'+i).textContent = v?fmt(v*it.qty):'—';
+      $('lt'+i).textContent = v?fmt(v*it.qty)+'원':'—';
       totals(); persist();
     }
   });
-  document.getElementById('app').addEventListener('change', function(e){
+  document.addEventListener('change', function(e){
     var t = e.target;
-    if(t.hasAttribute('data-i') && t.closest('.pbox')){
-      var it = S.cart[+t.getAttribute('data-i')]; if(it) t.value = it.price?fmt(it.price):'';
-    }
-  });
-  document.getElementById('app').addEventListener('keydown', function(e){
-    if(e.key==='Enter' && e.target.id==='draft'){ e.preventDefault(); var btn=document.querySelector('[data-act="addDraft"]'); if(btn) btn.click(); }
-    if(e.key==='Enter' && e.target.closest && e.target.closest('.pbox')){ e.target.blur(); }
+    if(t.hasAttribute('data-i') && t.closest('.pbox')){ var it=S.cart[+t.getAttribute('data-i')]; if(it) t.value = it.price?fmt(it.price):''; }
   });
 
   render();
-
   if('serviceWorker' in navigator){
     window.addEventListener('load', function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
   }
