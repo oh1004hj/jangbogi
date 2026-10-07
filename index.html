@@ -175,6 +175,14 @@ footer .tot i{font-style:normal;font-size:16px;font-weight:600}
 .sh-actions .primary{height:50px}
 @media (prefers-reduced-motion:reduce){.card,.sheet{transition:none;animation:none}}
 </style>
+<!-- 구글 애널리틱스 (방문 통계) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3ZPSNQ29N4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-3ZPSNQ29N4');
+</script>
 </head>
 <body>
 <div id="app">
@@ -380,6 +388,8 @@ footer .tot i{font-style:normal;font-size:16px;font-weight:600}
     }
     return '🛒 장보기 목록\n'+S.cart.map(function(it){ return it.name+(it.qty>1?' '+it.qty:''); }).join('\n');
   }
+  function track(name, params){ try{ if(window.gtag) window.gtag('event', name, params||{}); }catch(e){} }
+
   async function doShare(withPrice){
     var text = shareText(withPrice);
     ui.modal=null; render();
@@ -462,7 +472,7 @@ footer .tot i{font-style:normal;font-size:16px;font-weight:600}
       case 'toList': if(ui.tab==='pick' && S.cart.length){ ui.tab='list'; ui.editMode=false; $('main').scrollTop=0; } else return; break;
       case 'cat': ui.cat=v; $('main').scrollTop=0; break;
       case 'editMode': ui.editMode=!ui.editMode; break;
-      case 'add': addItem(currentCards[i]); persist(); break;
+      case 'add': addItem(currentCards[i]); track('add_item', {item_category: catOf(currentCards[i])}); persist(); break;
       case 'reset': var k=findIdx(currentCards[i]); if(k>-1) S.cart.splice(k,1); persist(); break;
       case 'open': ui.edit=currentCards[i]; break;
       case 'close': ui.edit=null; ui.editNew=false; break;
@@ -495,13 +505,14 @@ footer .tot i{font-style:normal;font-size:16px;font-weight:600}
         if(!S.cart.length){ toast('보낼 품목이 없어요. 먼저 품목을 담아주세요'); return; }
         ui.modal='send'; break;
       case 'closeModal': ui.modal=null; break;
-      case 'sendList': doShare(false); return;
-      case 'sendResult': doShare(true); return;
+      case 'sendList': track('send_list', {item_count: S.cart.length}); doShare(false); return;
+      case 'sendResult': track('send_result', {item_count: S.cart.length}); doShare(true); return;
       case 'pasteClip':
         (async function(){ try{ var t=await navigator.clipboard.readText(); if(t){ ui.impText=t; $('imp').value=t; updatePreview(); } else toast('복사한 내용이 없어요'); }catch(e){ toast('칸을 길게 눌러 붙여넣기 해주세요'); } })();
         return;
       case 'doImport':
         var added = mergeImport(parseList(ui.impText));
+        track('import_list', {added_count: added.length});
         ui.modal=null; ui.impText=''; ui.tab='list'; ui.editMode=false; persist();
         render(); $('main').scrollTop = $('main').scrollHeight;
         toast(added.length ? added.slice(0,4).join(', ')+(added.length>4?' 외 '+(added.length-4)+'개':'')+' 추가했어요' : '새로 추가된 품목이 없어요');
@@ -542,6 +553,10 @@ footer .tot i{font-style:normal;font-size:16px;font-weight:600}
   });
 
   render();
+  var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+  track('open_app', {launch_mode: standalone ? '홈 화면 앱' : '브라우저'});
+  window.addEventListener('appinstalled', function(){ track('app_installed'); });
+
   if('serviceWorker' in navigator){
     window.addEventListener('load', function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
   }
