@@ -1,10 +1,12 @@
 // 장보기 계산기 서비스 워커
 // 앱 파일을 수정해서 다시 올릴 때는 아래 버전 숫자를 하나 올려주세요 (v1 → v2).
-const CACHE = 'jangbogi-v9';
+const CACHE = 'jangbogi-v10';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+// 품목 3D 아이콘 묶음 (Microsoft Fluent Emoji, MIT 라이선스 - icons-LICENSE.txt)
+const ICONS = ['./icons.webp'];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS.concat(ICONS))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
